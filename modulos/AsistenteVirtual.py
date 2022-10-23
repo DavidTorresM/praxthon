@@ -5,7 +5,7 @@
 #from EnviadorEmails import EnviadorEmails
 #from EnviadorWhatsaap import EnviadorWhatsaap
 from GoogleCalendario import GoogleCalendario
-from ObtencionVoz import ObtencionVoz
+from ObtencionVoz import ObtencionVoz,ERROR_NO_ENTIENDO,ERROR_NO_RESULTADOS,INFO_ESTOY_ESPERANDO
 from ProcesamientoLenguaje import ProcesamientoLenguaje
 from ReconocimientoFacial import ReconocimientoFacial
 
@@ -43,42 +43,16 @@ def pedir_dato(dato):
 voz = ObtencionVoz()
 procesar_lenguaje = ProcesamientoLenguaje(os.getenv("OPENAI_API_KEY"))	
 face_recognition = ReconocimientoFacial()
+import time 
 
-if __name__=='__main__':
-	os.exit()
-	if primeraVez():
-		voz.speaking(f"Hola soy {NOMBRE_BOT} tu asistente personal.")
-		voz.speaking("Voy a comenzar pidiendote algunos cuantos datos.")
-		nombre = pedir_dato("nombre")
-		email  = pedir_dato("Correo electronico")
-		#Entrenar modelo
-		voz.speaking("Vamos a empezar a hacer el reconocimiento facial.")
-		voz.speaking("Se utilizara para que puedas acceder a tu cuenta.")
-		voz.speaking("Para que pueda recordar bien tu rostro necesito que hagas diferentes gestos.")
-		working_directory = face_recognition.prepare_working_directory(nombre)
-		face_recognition.get_samples_faces_from_cam(working_directory[1])
-		
-		hilo1 = threading.Thread(target=voz.speaking,args=("Estoy recordando tu rostro espera un momento",))
-		hilo1.start()
-		face_recognition.train_model(working_directory)
-		voz.speaking("Listo ya recorde tu rostro.")
-	else:
-		#nombre = pedir_dato("nombre").lower()
-		nombre = input()
-		#voz.speaking("Vere tu cara para que podamos iniciar sessión.")
-		working_directory = face_recognition.prepare_working_directory(nombre)
-		es_quien_dice_ser = face_recognition.reconocimiento_facial(working_directory)
-		if not es_quien_dice_ser:
-			voz.speaking(f"Parece no eres {nombre}.")
-			return None
-		#voz.speaking("Vere tu cara para que podamos iniciar sessión.")
-		voz.speaking(f"Hola {nombre} bienvenido. ¿En que'puedo ayudarte?")
 
-		while True:
-			input_usuario = voz.transform()
-			if input_usuario in [voz.ERROR_NO_ENTIENDO,voz.ERROR_NO_RESULTADOS,voz.INFO_ESTOY_ESPERANDO]:
-				respuesta_bot = procesar_lenguaje.mainProcesamiento(input_usuario)
-				voz.speaking(respuesta_bot)
+input_usuario = voz.transform()
+print(f"Input usuario {input_usuario}")
+if not input_usuario in [ERROR_NO_ENTIENDO,ERROR_NO_RESULTADOS,INFO_ESTOY_ESPERANDO]:
+	respuesta_bot = procesar_lenguaje.mainProcesamiento(input_usuario)
+	voz.speaking(respuesta_bot)
+
+
 
 
 

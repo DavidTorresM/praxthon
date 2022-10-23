@@ -34,10 +34,10 @@ class ReconocimientoFacial(object):
 
 	def get_samples_faces_from_cam(self,personPath):
 		"""Realiza la toma de las capturas de la camara."""
-		labels = ["seri@","sonriente","riendo","enojad@", "Guino un ojo","Guino el otro ojo","Sin Lentes","Hablando"]
+		labels = ["seri@","sonriente","riendo","enojad@", "Guino un ojo","Guino el otro ojo","Hablando"]
 		periodo = MUESTRAS_NUMERO//len(labels)
 		index=0
-		cap = cv2.VideoCapture(-1)
+		cap = cv2.VideoCapture(0)
 		faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades+'haarcascade_frontalface_default.xml')
 		count = 0
 		conta = 0 
@@ -65,7 +65,7 @@ class ReconocimientoFacial(object):
 				hilo1 = threading.Thread(target=self.voz.speaking,args=("Podrias poner tu cara "+labels[index],))
 				hilo1.start()
 				
-			cv2.putText(frame,labels[index]+" count: "+str(count)+" index: "+str(index), (114,430), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+			cv2.putText(frame,labels[index], (114,430), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
 			cv2.imshow('frame',frame)
 			k = cv2.waitKey(1)
 			if k == 27 or count >= MUESTRAS_NUMERO:
@@ -102,8 +102,8 @@ class ReconocimientoFacial(object):
 		print("Modelo almacenado...")
 
 	def reconocimiento_facial(self,working_directory):
-		UMBRAL_MATCHES_POSITIVOS = 60; contador_p = 0; 
-		UMBRAL_MATCHES_NEGATIVOS = 90; contador_n = 0; 
+		UMBRAL_MATCHES_POSITIVOS = 20; contador_p = 0; 
+		UMBRAL_MATCHES_NEGATIVOS = 40; contador_n = 0; 
 		dataPath = working_directory[0]
 		personPath = working_directory[1]
 		imagePaths = [i for i in os.listdir(dataPath) if not i in [".Training",".Testing"]]

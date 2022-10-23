@@ -10,6 +10,7 @@ from gcsa.event import Event
 
 from gcsa.recurrence import Recurrence, DAILY
 from datetime import date, datetime
+import os 
 
 
 class GoogleCalendario(object):
@@ -38,6 +39,6 @@ class GoogleCalendario(object):
 
 
 if __name__=='__main__':
-	mail = GoogleCalendario()
+	mail = GoogleCalendario(os.getenv("CORREO_CALENDAR"))
 	mail.hacer_evento("Evento test2", datetime(2022, 10, 24, 10, 0),"Oficina")
 	print(mail.leer_recordatorios())
