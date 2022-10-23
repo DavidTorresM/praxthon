@@ -10,6 +10,9 @@ from bs4 import BeautifulSoup
 
 from GoogleCalendario import GoogleCalendario
 
+import time
+from datetime import datetime
+import hashlib
 
 
 class ProcesamientoLenguaje(object):
@@ -73,11 +76,14 @@ class ProcesamientoLenguaje(object):
 		print("respuesta modelo",respuesta)
 		return "\n".join(respuesta).lower()
 
+	def getHash(self):
+		return hashlib.md5(datetime.now().__str__().encode("utf-8")).hexdigest()
+
 	def mainProcesamiento(self,palabra):
 		campo_semantico   = self.preguntarIa(f"cual es el campo semantico de la siguiente palabra \n {palabra}")
 		resultado_bot     = self.preguntarIa(f"{palabra}")
 		esImperativa = self.es_imperativa(palabra)
-
+		"""
 		if self.es_imperativa(palabra):
 			if self.checkBlackList(campo_semantico, ["aviso","notificación","alarma", "nota", "recordatorio","calendar","calendario","calendar.google.com"]): # Recordatorios 
 				if self.checkBlackList(campo_semantico,["calendar.google.com"]):
@@ -91,6 +97,15 @@ class ProcesamientoLenguaje(object):
 
 		elif campo_semantico in ["comunicación","emails"]:#Envio de correos electronicos
 			pass
+
+		"""
+
+		if self.preguntar_ia_boolean("¿El siguiente texto es código fuente?\n",resultado_bot):
+			md123 =  self.getHash()
+			f = open(f"/tmp/sourceCode{md123}","w")
+			f.write(resultado_bot)
+			f.close()
+			os.system(f"code /tmp/sourceCode{md123}")
 
 
 
