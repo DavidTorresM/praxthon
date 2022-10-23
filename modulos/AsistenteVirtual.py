@@ -72,9 +72,13 @@ if __name__=='__main__':
 			voz.speaking(f"Parece no eres {nombre}.")
 			return None
 		#voz.speaking("Vere tu cara para que podamos iniciar sessión.")
-		voz.speaking(f"Hola {nombre} bienvenido.")
+		voz.speaking(f"Hola {nombre} bienvenido. ¿En que'puedo ayudarte?")
 
-		procesar_lenguaje = 
+		while True:
+			input_usuario = voz.transform()
+			if input_usuario in [voz.ERROR_NO_ENTIENDO,voz.ERROR_NO_RESULTADOS,voz.INFO_ESTOY_ESPERANDO]:
+				respuesta_bot = procesar_lenguaje.mainProcesamiento(input_usuario)
+				voz.speaking(respuesta_bot)
 
 
 

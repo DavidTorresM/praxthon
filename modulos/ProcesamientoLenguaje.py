@@ -80,6 +80,7 @@ class ProcesamientoLenguaje(object):
 		return hashlib.md5(datetime.now().__str__().encode("utf-8")).hexdigest()
 
 	def mainProcesamiento(self,palabra):
+		result = ""
 		campo_semantico   = self.preguntarIa(f"cual es el campo semantico de la siguiente palabra \n {palabra}")
 		resultado_bot     = self.preguntarIa(f"{palabra}")
 		esImperativa = self.es_imperativa(palabra)
@@ -99,13 +100,33 @@ class ProcesamientoLenguaje(object):
 			pass
 
 		"""
-
-		if self.preguntar_ia_boolean("¿El siguiente texto es código fuente?\n",resultado_bot):
+		#calendarioGoogle = self.preguntar_ia_boolean("¿El siguiente texto tiene alguna relacion con el calendario de google?\n",palabra)
+		calendarioGoogle = self.checkBlackList(campo_semantico, ["aviso","notificación","alarma", "nota", "recordatorio","calendar","calendario","calendar.google.com"]) # Recordatorios 
+		if self.preguntar_ia_boolean("¿En la siguiente oracion estan preguntando la fecha de hoy?", palabra):
+			result = self.get_fecha()
+		elif esImperativa and  calendarioGoogle:
+			md123 =  self.getHash()
+			print("Imperativa de agenda")
+			calendario = GoogleCalendario(os.getenv("CORREO_CALENDAR"))
+			calendario.hacer_evento(f"Evento{md123}", datetime(2022, 10, 24, 10, 0))
+			result = "Se agrego el evento a la agenda del google calendario"
+		elif self.preguntar_ia_boolean("¿El siguiente texto contiene un link?\n",resultado_bot):
+			print("contiene un link")
+			webbrowser.open(resultado_bot.replace("\n",""))
+			result = "Sitio web abierto"
+		elif self.preguntar_ia_boolean("¿El siguiente texto es código fuente?\n",resultado_bot):
 			md123 =  self.getHash()
 			f = open(f"/tmp/sourceCode{md123}","w")
 			f.write(resultado_bot)
 			f.close()
 			os.system(f"code /tmp/sourceCode{md123}")
+			result = "Codigo fuente generado"
+		
+
+		else:
+			result = resultado_bot.replace("\n", " ")
+
+		return result
 
 
 
